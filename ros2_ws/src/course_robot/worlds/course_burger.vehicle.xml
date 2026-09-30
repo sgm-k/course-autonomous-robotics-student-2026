@@ -1,0 +1,53 @@
+<!-- TurtleBot3 Burger 相当のロボット（course_burger）。MVSim 同梱の turtlebot3_burger をもとに作成。
+     3D モデル（Apache-2.0, ROBOTIS）は ../models/turtlebot3 に同梱。 -->
+<vehicle:class name="course_burger">
+  <dynamics class="differential">
+    <l_wheel pos="0.0  0.08" mass="0.1" width="0.03" diameter="0.066" />
+    <r_wheel pos="0.0 -0.08" mass="0.1" width="0.03" diameter="0.066" />
+    <chassis mass="1.0" zmin="0.05" zmax="0.192">
+      <shape_from_visual/>
+    </chassis>
+    <controller class="twist_ideal">
+      <KP>1.0</KP> <KI>1.0</KI> <I_MAX>1.0</I_MAX> <KD>0</KD>
+      <V>0.0</V><W>0</W>
+      <max_torque>5</max_torque>
+    </controller>
+  </dynamics>
+  <friction class="default">
+    <mu>0.8</mu>
+    <C_damping>0.01</C_damping>
+    <C_rr>0.01</C_rr>
+  </friction>
+  <odometry
+    x_multiplier="$f{1.0+0.02*randn()}"
+    y_multiplier="$f{1.0+0.01*randn()}"
+    yaw_multiplier="$f{1.0+0.03*randn()}"
+  />
+  <visual>
+    <model_uri>${MVSIM_CURRENT_FILE_DIRECTORY}/../models/turtlebot3/burger_base.dae</model_uri>
+    <model_roll>90.0</model_roll>
+    <model_scale>0.001</model_scale>
+    <model_color>#404040</model_color>
+  </visual>
+  <sensor class="laser" name="laser1">
+    <pose_3d> -0.032 0.0 0.171 0.0 0.0 0.0 </pose_3d>
+    <fov_degrees>360</fov_degrees>
+    <sensor_period>0.10</sensor_period>
+    <nrays>360</nrays>
+    <range_std_noise>0.01</range_std_noise>
+    <angle_std_noise_deg>0.01</angle_std_noise_deg>
+    <raytrace_3d>false</raytrace_3d>
+    <max_range>3.5</max_range>
+    <visual>
+      <model_uri>${MVSIM_CURRENT_FILE_DIRECTORY}/../models/turtlebot3/lds.dae</model_uri>
+      <model_roll>90</model_roll>
+      <model_scale>0.001</model_scale>
+    </visual>
+    <viz_visiblePoints>true</viz_visiblePoints>
+    <viz_pointSize>3.0</viz_pointSize>
+    <viz_visiblePlane>false</viz_visiblePlane>
+    <viz_visibleLines>true</viz_visibleLines>
+    <viz_pointsColor>#ff000080</viz_pointsColor>
+    <viz_planeColor>#0000ff10</viz_planeColor>
+  </sensor>
+</vehicle:class>
