@@ -17,13 +17,22 @@ if [[ "${VERSION_CODENAME:-}" != "${course_ubuntu_codename}" ]]; then
   exit 1
 fi
 
+# 以前の手順で登録した ROS 2 の配布元（signed-by に鍵ファイルを指定する .list）が残っていると、
+# 新しい方式の ros2.sources と鍵の指定が食い違い、apt 全体が止まる。先に取り除く。
+for legacy in /etc/apt/sources.list.d/*.list; do
+  [[ -f "${legacy}" ]] || continue
+  if grep -q "packages.ros.org/ros2" "${legacy}"; then
+    echo "古い ROS 2 の配布元の設定を取り除きます: ${legacy}"
+    sudo rm -f "${legacy}"
+  fi
+done
+
 sudo apt update
 sudo apt upgrade -y
 sudo apt install -y curl git software-properties-common
 sudo add-apt-repository -y universe
 
-if [[ ! -f /etc/apt/sources.list.d/ros2.sources ]] && \
-   [[ ! -f /etc/apt/sources.list.d/ros2-latest.list ]]; then
+if [[ ! -f /etc/apt/sources.list.d/ros2.sources ]]; then
   ros_apt_version="$({
     curl -fsSL https://api.github.com/repos/ros-infrastructure/ros-apt-source/releases/latest \
       | sed -n 's/.*"tag_name": "\([^"]*\)".*/\1/p'
