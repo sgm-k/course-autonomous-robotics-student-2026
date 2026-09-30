@@ -5,7 +5,7 @@
 
 ## 取得とセットアップ
 
-Ubuntu端末で実行します。詳しい手順は、授業で配る手順書（準備編）にあります。
+Ubuntuのターミナルで実行します。詳しい手順は、授業で配る第1回の手順書にあります。
 
 ```bash
 cd ~
@@ -35,19 +35,24 @@ cd autonomous-robotics-student
 ./scripts/run_demo.sh
 ```
 
-別端末でロボットを操作します。
+MVSimとRViz2の画面が開きます。ロボットはMVSimの画面でキーボードを使って動かします。
+MVSimの画面を1回クリックして選んでから、次のキーを押してください。
+MVSimの画面を選んでいないと、キーを押しても動きません。
 
-```bash
-source scripts/env.sh
-ros2 run teleop_twist_keyboard teleop_twist_keyboard
-```
+| キー | 動き |
+|---|---|
+| `W` | 前に進む速さを上げる（1回押すごとに0.1 m/s） |
+| `S` | 前に進む速さを下げる（下げ続けると後ろに進む） |
+| `A` | 左に回る速さを上げる |
+| `D` | 右に回る速さを上げる |
+| スペース | 止まる |
 
-MVSimのLiDAR生データは`/laser1`、SLAM・AMCL・Nav2用に時刻をそろえたデータは
-`/scan`です。通常のLaunchで`scan_relay`が自動起動します。
+押した回数だけ速くなり、指を離しても走り続けます。止めるときはスペースを押します。
+このキー操作はMVSimの中で直接ロボットを動かすもので、ROS 2の`/cmd_vel`は使いません。
 
 ## 軽量モード
 
-MVSimのGUIを表示せず、RViz2だけを使用します。
+MVSimの画面を表示せず、RViz2だけを使用します（この場合、上のキー操作は使えません）。
 
 ```bash
 source scripts/env.sh

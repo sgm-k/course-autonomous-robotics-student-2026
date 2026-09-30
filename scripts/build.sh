@@ -16,6 +16,4 @@ cd "${course_repo_dir}/ros2_ws"
 colcon build --symlink-install
 
 echo
-echo "ビルドが完了しました。新しい端末では次を実行してください。"
-echo "  cd ${course_repo_dir}"
-echo "  source scripts/env.sh"
+echo "ビルドが完了しました。"
