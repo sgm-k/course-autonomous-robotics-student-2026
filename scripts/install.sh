@@ -65,6 +65,17 @@ if [[ ! -f /etc/ros/rosdep/sources.list.d/20-default.list ]]; then
 fi
 rosdep update
 
+# WSL では、PC によって Ubuntu の時計が Windows より速く進むことがある。標準の時刻合わせ
+# （systemd-timesyncd）はそのずれを一気に戻すため、シミュレータが定期的に数秒止まる。
+# chrony で Windows の時刻（/dev/ptp_hyperv）を基準にし、時計を戻さずに滑らかに合わせる。
+if [[ -e /dev/ptp_hyperv ]]; then
+  echo "WSL の時計を Windows の時刻に合わせる設定（chrony）を入れます"
+  sudo apt install -y chrony
+  echo "refclock PHC /dev/ptp_hyperv poll 3 dpoll -2 offset 0 stratum 2" \
+    | sudo tee /etc/chrony/conf.d/hyperv.conf >/dev/null
+  sudo systemctl restart chrony || true
+fi
+
 set +u
 # shellcheck disable=SC1091
 source "/opt/ros/${course_ros_distro}/setup.bash"

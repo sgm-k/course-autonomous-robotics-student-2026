@@ -78,6 +78,14 @@ PY
   fi
 fi
 
+if [[ -e /dev/ptp_hyperv ]]; then
+  if systemctl is-active --quiet chrony 2>/dev/null; then
+    pass "時刻の同期（chrony）"
+  else
+    warn "時刻の同期（chrony）が動いていません。シミュレータが定期的に止まることがあります（./scripts/install.sh を実行し直す）"
+  fi
+fi
+
 if [[ -f "${course_repo_dir}/ros2_ws/install/setup.bash" ]]; then
   set +u
   # shellcheck disable=SC1091
