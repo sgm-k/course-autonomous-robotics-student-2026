@@ -13,10 +13,12 @@
       <max_torque>5</max_torque>
     </controller>
   </dynamics>
+  <!-- 減衰と転がり抵抗は 0 にする。0 でないと、指令した速さより約8%遅く進み、
+       「速さ × 時間 = 進む距離」が成り立たなくなるため（初心者向けの授業での確認用）。 -->
   <friction class="default">
     <mu>0.8</mu>
-    <C_damping>0.01</C_damping>
-    <C_rr>0.01</C_rr>
+    <C_damping>0.0</C_damping>
+    <C_rr>0.0</C_rr>
   </friction>
   <odometry
     x_multiplier="$f{1.0+0.02*randn()}"

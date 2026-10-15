@@ -21,12 +21,23 @@ class ConstantVelocity(Node):
         self.duration = float(self.get_parameter('duration').value)
 
         self.publisher = self.create_publisher(Twist, '/cmd_vel', 10)
-        self.start_time = self.get_clock().now()
+        # Start timing only after the simulator has subscribed to /cmd_vel.
+        # Otherwise the first commands are lost while ROS 2 is connecting,
+        # and the robot moves for less than `duration` seconds.
+        self.start_time = None
         self.finished = False
         self.timer = self.create_timer(0.1, self.publish_command)
 
     def publish_command(self) -> None:
         """Publish motion until duration elapses, then publish zero velocity."""
+        if self.start_time is None:
+            if self.publisher.get_subscription_count() == 0:
+                return
+            self.start_time = self.get_clock().now()
+            self.get_logger().info(
+                f'start: linear_speed={self.linear_speed} m/s, '
+                f'angular_speed={self.angular_speed} rad/s, '
+                f'duration={self.duration} s')
         elapsed = (self.get_clock().now() - self.start_time).nanoseconds / 1e9
         command = Twist()
 
