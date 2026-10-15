@@ -35,4 +35,18 @@ else
   echo "WARNING: ワークスペースが未ビルドです。./scripts/build.sh を実行してください。" >&2
 fi
 
+# 自分のワークスペース（~/ros2_ws）をビルドしてあれば、それも読み込む。
+# これで、自分で作ったノードも、新しいターミナルですぐ ros2 run できる。
+if [[ -f "${HOME}/ros2_ws/install/setup.bash" ]]; then
+  if [[ $- == *u* ]]; then
+    set +u
+    # shellcheck disable=SC1091
+    source "${HOME}/ros2_ws/install/setup.bash"
+    set -u
+  else
+    # shellcheck disable=SC1091
+    source "${HOME}/ros2_ws/install/setup.bash"
+  fi
+fi
+
 export COURSE_REPO_DIR="${course_repo_dir}"
