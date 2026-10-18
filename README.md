@@ -26,6 +26,7 @@ cd autonomous-robotics-student
 | `scripts/` | インストール、診断、ビルド、起動のコマンド |
 | `ros2_ws/` | 授業用のROS 2パッケージ（ワールド、起動ファイル、設定） |
 | `examples/` | 演習で使うプログラムの例（回ごと） |
+| `maps/` | 予備の地図（第6回の地図がうまく作れなかったときに使う） |
 
 配布されたファイルは書き換えないでください。自分のコードは、ホームフォルダに作る
 自分のワークスペース `~/ros2_ws` に置きます（作り方は第4回の手順書にあります）。
@@ -70,19 +71,18 @@ ros2 launch course_robot course.launch.py \
 
 ## SLAM・自己位置推定・Nav2
 
-第6回以降は次の起動ファイルを使用します。`maps/week06.yaml`は、自分で作成して`maps/`に保存した地図です。
+第6回以降は次の起動ファイルを使います。地図は第6回で `~/maps/week06` に保存したものです。
+地図がうまく作れなかったときは、予備の地図 `maps/course_map.yaml` を使えます。
 
 ```bash
-# 地図作成
-ros2 launch course_robot slam.launch.py headless:=true
+# 地図づくり（SLAM）
+ros2 launch course_robot slam.launch.py
 
-# AMCL
-ros2 launch course_robot localization.launch.py \
-  map:=$PWD/maps/week06.yaml headless:=true
+# 地図の上での自己位置推定（AMCL）
+ros2 launch course_robot localization.launch.py map:=$HOME/maps/week06.yaml
 
-# Nav2
-ros2 launch course_robot navigation.launch.py \
-  map:=$PWD/maps/week06.yaml headless:=true
+# ナビゲーション（Nav2）
+ros2 launch course_robot navigation.launch.py map:=$HOME/maps/week06.yaml
 ```
 
 MVSimは`/clock`をpublishしないため、本教材の設定では`use_sim_time: false`です。
