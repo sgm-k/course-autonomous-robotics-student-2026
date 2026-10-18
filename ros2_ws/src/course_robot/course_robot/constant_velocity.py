@@ -2,6 +2,7 @@
 
 from geometry_msgs.msg import Twist
 import rclpy
+from rclpy.executors import ExternalShutdownException
 from rclpy.node import Node
 
 
@@ -61,13 +62,14 @@ def main(args=None) -> None:
     try:
         while rclpy.ok() and not node.finished:
             rclpy.spin_once(node, timeout_sec=0.1)
-    except KeyboardInterrupt:
+    except (KeyboardInterrupt, ExternalShutdownException):
         pass
     finally:
-        node.stop()
-        rclpy.spin_once(node, timeout_sec=0.1)
+        if rclpy.ok():
+            node.stop()
+            rclpy.spin_once(node, timeout_sec=0.1)
         node.destroy_node()
-        rclpy.shutdown()
+        rclpy.try_shutdown()
 
 
 if __name__ == '__main__':

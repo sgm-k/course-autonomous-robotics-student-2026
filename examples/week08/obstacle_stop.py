@@ -7,6 +7,7 @@ import math
 
 from geometry_msgs.msg import Twist
 import rclpy
+from rclpy.executors import ExternalShutdownException
 from rclpy.node import Node
 from sensor_msgs.msg import LaserScan
 
@@ -66,9 +67,10 @@ def main():
     node = ObstacleStop()
     try:
         rclpy.spin(node)
-    except KeyboardInterrupt:
+    except (KeyboardInterrupt, ExternalShutdownException):
         pass
-    node.pub.publish(Twist())  # 最後に止める
+    if rclpy.ok():
+        node.pub.publish(Twist())  # 最後に止める
     node.destroy_node()
     rclpy.try_shutdown()
 

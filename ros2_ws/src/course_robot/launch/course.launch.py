@@ -4,10 +4,34 @@ import os
 
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument
+from launch.actions import DeclareLaunchArgument, OpaqueFunction
 from launch.conditions import IfCondition
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
+
+
+def make_mvsim(context):
+    """Create the MVSim node; a bare world file name is looked up in worlds/."""
+    course_share = get_package_share_directory('course_robot')
+    world = LaunchConfiguration('world').perform(context)
+    if os.sep not in world:
+        world = os.path.join(course_share, 'worlds', world)
+    return [Node(
+        package='mvsim',
+        executable='mvsim_node',
+        name='mvsim',
+        output='screen',
+        parameters=[{
+            'world_file': world,
+            'headless': LaunchConfiguration('headless'),
+            'do_fake_localization': LaunchConfiguration('do_fake_localization'),
+            'publish_tf_odom2baselink': LaunchConfiguration('publish_odom_tf'),
+            'force_publish_vehicle_namespace': False,
+            'publish_log_topics': False,
+            'use_sim_time': False,
+            'realtime_factor': LaunchConfiguration('realtime_factor'),
+        }],
+    )]
 
 
 def generate_launch_description():
@@ -18,17 +42,12 @@ def generate_launch_description():
     rviz_config = os.path.join(
         course_share, 'config', 'course.rviz')
 
-    headless = LaunchConfiguration('headless')
     use_rviz = LaunchConfiguration('use_rviz')
-    world_file = LaunchConfiguration('world')
-    do_fake_localization = LaunchConfiguration('do_fake_localization')
-    publish_odom_tf = LaunchConfiguration('publish_odom_tf')
-    realtime_factor = LaunchConfiguration('realtime_factor')
 
     return LaunchDescription([
         DeclareLaunchArgument(
             'world', default_value=default_world,
-            description='Absolute path to an MVSim world XML file'),
+            description='MVSim world XML: absolute path, or a file name in worlds/'),
         DeclareLaunchArgument(
             'headless', default_value='false',
             description='Disable the MVSim GUI'),
@@ -44,22 +63,7 @@ def generate_launch_description():
         DeclareLaunchArgument(
             'realtime_factor', default_value='1.0',
             description='MVSim speed relative to wall time'),
-        Node(
-            package='mvsim',
-            executable='mvsim_node',
-            name='mvsim',
-            output='screen',
-            parameters=[{
-                'world_file': world_file,
-                'headless': headless,
-                'do_fake_localization': do_fake_localization,
-                'publish_tf_odom2baselink': publish_odom_tf,
-                'force_publish_vehicle_namespace': False,
-                'publish_log_topics': False,
-                'use_sim_time': False,
-                'realtime_factor': realtime_factor,
-            }],
-        ),
+        OpaqueFunction(function=make_mvsim),
         Node(
             package='course_robot',
             executable='scan_relay',

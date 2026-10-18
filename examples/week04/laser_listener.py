@@ -1,6 +1,7 @@
 """LiDAR が測った正面の距離を表示するノード（第4回の演習）。"""
 
 import rclpy
+from rclpy.executors import ExternalShutdownException
 from rclpy.node import Node
 from sensor_msgs.msg import LaserScan
 
@@ -28,7 +29,7 @@ def main():
     node = LaserListener()
     try:
         rclpy.spin(node)  # Ctrl+C を押すまで、callback を呼び続ける
-    except KeyboardInterrupt:
+    except (KeyboardInterrupt, ExternalShutdownException):
         pass
     node.destroy_node()
     rclpy.try_shutdown()

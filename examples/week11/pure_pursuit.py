@@ -9,6 +9,7 @@ import math
 from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
 import rclpy
+from rclpy.executors import ExternalShutdownException
 from rclpy.node import Node
 
 
@@ -94,9 +95,10 @@ def main():
     try:
         while rclpy.ok() and not node.finished:
             rclpy.spin_once(node)
-    except KeyboardInterrupt:
+    except (KeyboardInterrupt, ExternalShutdownException):
         pass
-    node.pub.publish(Twist())
+    if rclpy.ok():
+        node.pub.publish(Twist())  # 最後に止める
     node.destroy_node()
     rclpy.try_shutdown()
 

@@ -10,6 +10,7 @@ import time
 from geometry_msgs.msg import PoseStamped
 from nav2_simple_commander.robot_navigator import BasicNavigator, TaskResult
 import rclpy
+from rclpy.executors import ExternalShutdownException
 
 
 def make_pose(navigator, x, y, yaw_deg):
@@ -87,8 +88,9 @@ def main():
     try:
         while mission.step():
             pass
-    except KeyboardInterrupt:
-        navigator.cancelTask()
+    except (KeyboardInterrupt, ExternalShutdownException):
+        if rclpy.ok():
+            navigator.cancelTask()
     rclpy.try_shutdown()
 
 

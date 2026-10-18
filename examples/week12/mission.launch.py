@@ -18,12 +18,17 @@ def generate_launch_description():
     course_share = get_package_share_directory('course_robot')
     week12_share = get_package_share_directory('week12')
     map_file = LaunchConfiguration('map')
+    params_file = LaunchConfiguration('params')
 
     return LaunchDescription([
         # 起動するときに map:=... で地図を変えられるようにする
         DeclareLaunchArgument(
             'map', default_value=os.path.expanduser('~/maps/week06.yaml'),
             description='使う地図の YAML ファイル'),
+        # params:=... でパラメータのファイルを変えられるようにする
+        DeclareLaunchArgument(
+            'params', default_value=os.path.join(week12_share, 'config', 'mission.yaml'),
+            description='巡回のノードのパラメータのファイル'),
         # 別の起動ファイルを取り込む
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(
@@ -36,6 +41,6 @@ def generate_launch_description():
             executable='mission',
             name='mission',
             output='screen',
-            parameters=[os.path.join(week12_share, 'config', 'mission.yaml')],
+            parameters=[params_file],
         ),
     ])
